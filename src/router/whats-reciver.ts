@@ -8,11 +8,11 @@ router.get('/', async (req: Request, res: Response) => {
     res.send({ response: true})
 })
 
-router.get('/webhook', (req, res) => {
-  res.send(req.query["hub.challenge"]).status(200).end()
-});
+// router.get('/webhook', (req, res) => {
+//   res.send(req.query["hub.challenge"]).status(200).end()
+// });
 
-router.post('/webhook', (req, res) => {
+router.post('/webhook1', (req, res) => {
     let msg = ''
     let betDatas = {}
     if(req.body.entry[0] !== undefined) {
