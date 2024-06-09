@@ -63,7 +63,7 @@ router.get('/oauth', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 }));
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.code === undefined) {
-        return res.send('Express Typescript on Vercel');
+        return res.send('Presentation Builder a Jotform/Google Slides/PDFkit integration');
     }
     else {
         const code = req.query.code;

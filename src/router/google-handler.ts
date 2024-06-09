@@ -62,7 +62,7 @@ router.get('/oauth', async (req: Request, res: Response) => {
 })
 router.get('/', async (req: Request, res: Response) => {
   if (req.query.code === undefined) {
-    return res.send('Express Typescript on Vercel')
+    return res.send('Presentation Builder a Jotform/Google Slides/PDFkit integration')
   } else {
     const code = req.query.code
     const { tokens } = await oauth2Client.getToken(code)

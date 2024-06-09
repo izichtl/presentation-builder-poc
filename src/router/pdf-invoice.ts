@@ -6,6 +6,9 @@ router.use(express.json());
 
 
 router.get('/invoice', async (req: Request, res: Response) => {
+  if (req.query.email === undefined) {
+    return res.send('Please send user email as query string')
+  } else {
     const email: string = req.query.email as string
     const user = await getUserFromEmail(email)
     const jsonUser = JSON.parse(user)
@@ -23,6 +26,7 @@ router.get('/invoice', async (req: Request, res: Response) => {
         (data: any) => stream.write(data),
         () => stream.end()
     )
+  }
 })
 
 export default router
