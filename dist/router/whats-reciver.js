@@ -23,25 +23,26 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 router.post('/t', (req, res) => {
     console.log('ttttttttttttttt');
     console.log(req.body);
-    (0, whats_sender_1.whatsAppSenderMessage)("5521982608223", "Envie o código da aposta", "HBgNNTUyMTk4MjYwODIyMxUCABIYEjBERUQxNzk3MDFEODM4N0QzMQA=");
-    res.send({}).status(200).end();
+    (0, whats_sender_1.whatsAppSenderMessage)("5521982608223", "Envie o código da aposta", "107368482457800");
+    res.status(200).send('Webhook recebida com sucesso!2');
 });
 router.post('/webhook', (req, res) => {
     const dados = req.body;
     console.log('chegada na primeira request');
-    axios_1.default.post('https://3140-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t', dados)
+    axios_1.default.post('https://572a-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t', dados)
         .then(response => {
         // Resposta recebida da outra rota
         console.log(response.data);
         // Você pode retornar uma resposta para o cliente, se desejar
-        res.send('Dados enviados com sucesso para a outra rota!');
+        // res.status(200).send('Webhook recebida com sucesso!')
     })
         .catch(error => {
         // Tratamento de erros, se houver
         console.error('Erro ao enviar os dados para a outra rota:', error);
         // Retorne um status de erro para o cliente, se necessário
-        res.status(500).send('Erro ao enviar os dados para a outra rota!');
+        // res.status(200).send('Webhook recebida com sucesso!')
     });
+    res.status(200).send('Webhook recebida com sucesso!');
     // 
     // let msg = ''
     // let betDatas = {}

@@ -9,9 +9,8 @@ const axiosConfig = {
 }
 
 export const whatsAppSenderMessage = async (number: any, message:string, wmaid: string) => {
-    const url = `https://graph.facebook.com/v19.0/107368482457800/messages`
+    const url = `https://graph.facebook.com/v19.0/${wmaid}/messages`
     if (wmaid) {
-        console.log('2222wmaid')
         axios.post(url, {
             messaging_product: 'whatsapp',
             context: {
