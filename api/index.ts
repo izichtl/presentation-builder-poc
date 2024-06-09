@@ -2,9 +2,9 @@
 // @ts-nocheck
 import express from 'express'
 import bodyParser from 'body-parser'
-import googleHandler from './router/google-handler.ts'
-import dataReciver from './router/data-reciver.ts'
-import testRouter from './router/base-router.ts'
+import googleHandler from './router/google-handler'
+import dataReciver from './router/data-reciver'
+import testRouter from './router/base-router'
 
 const app = express()
 
