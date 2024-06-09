@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-nocheck
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const google_handler_ts_1 = __importDefault(require("./src/router/google-handler.ts"));
-const data_reciver_ts_1 = __importDefault(require("./src/router/data-reciver.ts"));
-const base_router_ts_1 = __importDefault(require("./src/router/base-router.ts"));
+const google_handler_ts_1 = __importDefault(require("./router/google-handler.ts"));
+const data_reciver_ts_1 = __importDefault(require("./router/data-reciver.ts"));
+const base_router_ts_1 = __importDefault(require("./router/base-router.ts"));
 const app = (0, express_1.default)();
 require("dotenv").config();
 app.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -22,4 +22,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
-//# sourceMappingURL=server.js.map
+//# sourceMappingURL=index.js.map
