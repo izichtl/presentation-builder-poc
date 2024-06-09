@@ -6,6 +6,7 @@ import googleHandler from './router/google-handler'
 import dataReciver from './router/data-reciver'
 import testRouter from './router/base-router'
 import pdfHandler from './router/pdf-invoice'
+import whatsReciver from './router/whats-reciver'
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json())
 app.use('/', googleHandler)
 app.use('/data-reciver', dataReciver)
 app.use('/pdf', pdfHandler)
+app.use('/', whatsReciver)
 
 // to test only
 app.use('/test', testRouter)

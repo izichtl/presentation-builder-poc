@@ -12,7 +12,7 @@ router.get('/invoice', async (req: Request, res: Response) => {
     const email: string = req.query.email as string
     const user = await getUserFromEmail(email)
     const jsonUser = JSON.parse(user)
-    const htmlTitle = jsonUser.title;
+    // const htmlTitle = jsonUser.title;
 
     const stream = res.writeHead(200, {
         'Content-Type': 'application/pdf',

@@ -25,7 +25,7 @@ router.get('/invoice', (req, res) => __awaiter(void 0, void 0, void 0, function*
         const email = req.query.email;
         const user = yield (0, user_1.getUserFromEmail)(email);
         const jsonUser = JSON.parse(user);
-        const htmlTitle = jsonUser.title;
+        // const htmlTitle = jsonUser.title;
         const stream = res.writeHead(200, {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `inline;filename=${jsonUser.title}.pdf`
