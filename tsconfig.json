@@ -9,12 +9,12 @@
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
-        "outDir": "public",
+        "outDir": "dist",
         "baseUrl": ".",
         "resolveJsonModule": true,
         "paths": {
-            "*": ["node_modules/*", "api/types/*"]
+            "*": ["node_modules/*", "src/types/*"]
         }
     },
-    "include": ["api/**/*", "./"]
+    "include": ["src/**/*", "./"]
     }
