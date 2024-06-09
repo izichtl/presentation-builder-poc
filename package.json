@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx ts-node-dev server.ts"
+    "start": "npx ts-node-dev server.ts",
+    "build": "rimraf dist && tsc"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "openai": "^4.29.2",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^4.0.379",
+    "rimraf": "^5.0.7",
     "ts-dotenv": "^0.9.1",
     "tsc": "^2.0.4",
     "uuid": "^9.0.1"
