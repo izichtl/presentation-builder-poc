@@ -77,15 +77,11 @@ router.get('/', async (req: Request, res: Response) => {
 })
 
 router.get('/create-presentation', async (req: Request, res: Response) => {
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
   let user_token = ''
   const user_email = req.query.email  
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@')
-  console.log(user_email)
   const user = await getUserFromEmail(user_email)
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@1')
+
   const jsonUser = JSON.parse(user)
-  console.log(jsonUser)
   user_token = jsonUser.access_token
   
   const requestObject = await slidesRequestBuilder(jsonUser)

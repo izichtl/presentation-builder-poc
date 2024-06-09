@@ -1,6 +1,15 @@
   // @ts-nocheck 
 import { v4 as uuidv4 } from 'uuid';
 import { introImgUrl, themeImgUrls } from '../storage/image-path';
+import axios from 'axios'
+
+const fetchImage = async (src) => {
+  const image = await axios
+      .get(src, {
+          responseType: 'arraybuffer'
+      })
+  return image.data
+}
 
 const processarTemas = (temasString: string): string[] => {
   const temas: { Assuntos: string }[] = JSON.parse(temasString)
@@ -92,4 +101,24 @@ export const slidesRequestBuilder = async (data) => {
         requests,
     }
 }
+
+export const pdfSlidesBuilder = async (data: any, document: any, sizes: any) => {
+  const introduction = await fetchImage(introImgUrl[data.style]);
+  // Adicione a página de introdução
+  document.image(introduction, {width: sizes.width, height: sizes.height}).text('Stretch', sizes.width, sizes.height)
+  
+  const temas = processarTemas(data.thema_list)
+  for (const theme_item of temas) {
+    const themeImgUrlsForItem = themeImgUrls[theme_item]
+    for (const element of themeImgUrlsForItem) {
+      const theme_page = await fetchImage(element)
+      document.addPage({ size: [sizes.width, sizes.height], margin: 0 })
+      document.image(theme_page, {width: sizes.width, height: sizes.height}).text('Stretch', sizes.width, sizes.height);
+    }
+  }
+}
+
+
+
+
 

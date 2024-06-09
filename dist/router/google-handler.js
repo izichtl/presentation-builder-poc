@@ -77,15 +77,10 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 }));
 router.get('/create-presentation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@');
     let user_token = '';
     const user_email = req.query.email;
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log(user_email);
     const user = yield (0, user_1.getUserFromEmail)(user_email);
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@1');
     const jsonUser = JSON.parse(user);
-    console.log(jsonUser);
     user_token = jsonUser.access_token;
     const requestObject = yield (0, g_slides_builder_1.slidesRequestBuilder)(jsonUser);
     const isValid = yield (0, refresh_token_1.verifyGoogleToken)(jsonUser.access_token);

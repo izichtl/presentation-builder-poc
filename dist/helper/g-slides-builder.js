@@ -8,11 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.slidesRequestBuilder = void 0;
+exports.pdfSlidesBuilder = exports.slidesRequestBuilder = void 0;
 // @ts-nocheck 
 const uuid_1 = require("uuid");
 const image_path_1 = require("../storage/image-path");
+const axios_1 = __importDefault(require("axios"));
+const fetchImage = (src) => __awaiter(void 0, void 0, void 0, function* () {
+    const image = yield axios_1.default
+        .get(src, {
+        responseType: 'arraybuffer'
+    });
+    return image.data;
+});
 const processarTemas = (temasString) => {
     const temas = JSON.parse(temasString);
     const temasProcessados = [];
@@ -101,4 +112,19 @@ const slidesRequestBuilder = (data) => __awaiter(void 0, void 0, void 0, functio
     };
 });
 exports.slidesRequestBuilder = slidesRequestBuilder;
+const pdfSlidesBuilder = (data, document, sizes) => __awaiter(void 0, void 0, void 0, function* () {
+    const introduction = yield fetchImage(image_path_1.introImgUrl[data.style]);
+    // Adicione a página de introdução
+    document.image(introduction, { width: sizes.width, height: sizes.height }).text('Stretch', sizes.width, sizes.height);
+    const temas = processarTemas(data.thema_list);
+    for (const theme_item of temas) {
+        const themeImgUrlsForItem = image_path_1.themeImgUrls[theme_item];
+        for (const element of themeImgUrlsForItem) {
+            const theme_page = yield fetchImage(element);
+            document.addPage({ size: [sizes.width, sizes.height], margin: 0 });
+            document.image(theme_page, { width: sizes.width, height: sizes.height }).text('Stretch', sizes.width, sizes.height);
+        }
+    }
+});
+exports.pdfSlidesBuilder = pdfSlidesBuilder;
 //# sourceMappingURL=g-slides-builder.js.map

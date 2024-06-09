@@ -44,7 +44,6 @@ exports.getUserFromToken = getUserFromToken;
 function getUserFromEmail(email) {
     return __awaiter(this, void 0, void 0, function* () {
         const redisClient = yield redis_1.redisPool.acquire();
-        console.log(redisClient);
         const userExist = yield redisClient.get(email);
         redis_1.redisPool.release(redisClient);
         return userExist;
