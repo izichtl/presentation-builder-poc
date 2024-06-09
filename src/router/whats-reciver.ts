@@ -8,13 +8,18 @@ router.get('/', async (req: Request, res: Response) => {
     res.send({ response: true})
 })
 
-// router.get('/webhook', (req, res) => {
-//   res.send(req.query["hub.challenge"]).status(200).end()
-// });
+router.post('/t', (req, res) => {
+  console.log('t')
+  console.log(req)
 
-router.post('/webhook1', (req, res) => {
+  res.send({}).status(200).end()
+});
+
+router.post('/webhook', (req, res) => {
     let msg = ''
     let betDatas = {}
+    console.log(req)
+    res.redirect('https://3140-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t')
     if(req.body.entry[0] !== undefined) {
       const entry = req.body.entry[0].changes
       if(entry[0] !== undefined) {

@@ -19,12 +19,16 @@ router.use(express_1.default.json());
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ response: true });
 }));
-// router.get('/webhook', (req, res) => {
-//   res.send(req.query["hub.challenge"]).status(200).end()
-// });
-router.post('/webhook1', (req, res) => {
+router.post('/t', (req, res) => {
+    console.log('t');
+    console.log(req);
+    res.send({}).status(200).end();
+});
+router.post('/webhook', (req, res) => {
     let msg = '';
     let betDatas = {};
+    console.log(req);
+    res.redirect('https://3140-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t');
     if (req.body.entry[0] !== undefined) {
         const entry = req.body.entry[0].changes;
         if (entry[0] !== undefined) {
