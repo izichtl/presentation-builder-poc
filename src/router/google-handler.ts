@@ -61,10 +61,8 @@ router.get('/oauth', async (req: Request, res: Response) => {
   res.redirect(url)
 })
 router.get('/', async (req: Request, res: Response) => {
-  return res.send('Express Typescript on Vercel')
   if (req.query.code === undefined) {
-
-
+    return res.send('Express Typescript on Vercel')
   } else {
     const code = req.query.code
     const { tokens } = await oauth2Client.getToken(code)

@@ -62,8 +62,8 @@ router.get('/oauth', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     res.redirect(url);
 }));
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return res.send('Express Typescript on Vercel');
     if (req.query.code === undefined) {
+        return res.send('Express Typescript on Vercel');
     }
     else {
         const code = req.query.code;
