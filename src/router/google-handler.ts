@@ -39,22 +39,20 @@ const router: Router = express.Router()
 router.use(express.json())
 
 
+const oauth2Client = new google.auth.OAuth2(
+  process.env.APP_CLIENT_ID,
+  process.env.APP_CLIENT_SECRET,
+  process.env.APP_REDIRECT_URL
+)
 
+const scopes = [
+  'https://www.googleapis.com/auth/presentations',
+  'https://www.googleapis.com/auth/userinfo.email'
+]
 
 
 
 router.get('/oauth', async (req: Request, res: Response) => {
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.APP_CLIENT_ID,
-    process.env.APP_CLIENT_SECRET,
-    process.env.APP_REDIRECT_URL
-  )
-
-  const scopes = [
-    'https://www.googleapis.com/auth/presentations',
-    'https://www.googleapis.com/auth/userinfo.email'
-  ]
-
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes
@@ -63,15 +61,19 @@ router.get('/oauth', async (req: Request, res: Response) => {
   res.redirect(url)
 })
 router.get('/', async (req: Request, res: Response) => {
-  const code = req.query.code
-  const { tokens } = await oauth2Client.getToken(code)
-  const user = await getUserFromToken(tokens.id_token)
-  const access_token = tokens.access_token
-  const user_email = user.payload.email
-  const refresh_token = tokens.refresh_token
+  if (req.query.code === undefined) {
+    res.send({ response: true})
+  } else {
+    const code = req.query.code
+    const { tokens } = await oauth2Client.getToken(code)
+    const user = await getUserFromToken(tokens.id_token)
+    const access_token = tokens.access_token
+    const user_email = user.payload.email
+    const refresh_token = tokens.refresh_token
 
-  await updateUserToken(user_email, access_token, refresh_token)
-  res.redirect(307, `/create-presentation?email=${user_email}`)
+    await updateUserToken(user_email, access_token, refresh_token)
+    res.redirect(307, `/create-presentation?email=${user_email}`)
+  }
 })
 
 router.get('/create-presentation', async (req: Request, res: Response) => {
@@ -108,8 +110,8 @@ router.get('/create-presentation', async (req: Request, res: Response) => {
 
   const urlslide = `https://docs.google.com/presentation/d/${created_presentation_id}/edit#slide=id.p`
   
-  // res.redirect(urlslide)
-  res.send({ response: true})
+  res.redirect(urlslide)
+  // res.send({ response: true})
 })
 
 export default router;
