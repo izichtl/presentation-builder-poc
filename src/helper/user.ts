@@ -11,7 +11,6 @@ export async function getUserFromEmail(
     email: string
   ): Promise<any> {
     const redisClient = await redisPool.acquire()
-    console.log(redisClient)
     const userExist = await redisClient.get(email)
     redisPool.release(redisClient)
     return userExist

@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import googleHandler from './router/google-handler'
 import dataReciver from './router/data-reciver'
 import testRouter from './router/base-router'
+import pdfHandler from './router/pdf-invoice'
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json())
 // router
 app.use('/', googleHandler)
 app.use('/data-reciver', dataReciver)
+app.use('/pdf', pdfHandler)
 
 // to test only
 app.use('/test', testRouter)
