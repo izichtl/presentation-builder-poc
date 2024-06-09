@@ -9,8 +9,10 @@ const axiosConfig = {
 }
 
 export const whatsAppSenderMessage = async (number: any, message:string, wmaid: string) => {
+    const url = `https://graph.facebook.com/v19.0/107368482457800/messages`
     if (wmaid) {
-        axios.post(`https://graph.facebook.com/v14.0/${wmaid}/messages`, {
+        console.log('2222wmaid')
+        axios.post(url, {
             messaging_product: 'whatsapp',
             context: {
                 message_id: wmaid
@@ -29,21 +31,21 @@ export const whatsAppSenderMessage = async (number: any, message:string, wmaid: 
             console.log(error);
         });
     } else {
-        axios.post(`https://graph.facebook.com/v14.0/${wmaid}/messages`, {
-            messaging_product: 'whatsapp',
-            to: number,
-            type: "text",
-            text: { 
-                "body": message, 
-            }
-        }, axiosConfig)
+        // axios.post(`https://graph.facebook.com/v14.0/${wmaid}/messages`, {
+        //     messaging_product: 'whatsapp',
+        //     to: number,
+        //     type: "text",
+        //     text: { 
+        //         "body": message, 
+        //     }
+        // }, axiosConfig)
   
-        .then(function (response: any) {
-            console.log(response)
-            return true
-        })
-        .catch(function (error) {
-            console.log(error)
-        });
+        // .then(function (response: any) {
+        //     console.log(response)
+        //     return true
+        // })
+        // .catch(function (error) {
+        //     console.log(error)
+        // });
     }
   }

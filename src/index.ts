@@ -21,25 +21,25 @@ app.use('/data-reciver', dataReciver)
 app.use('/pdf', pdfHandler)
 app.use('/', whatsReciver)
 
-app.post("/webhook",(req,res)=>{
-  res.redirect('https://3140-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t')
+// app.post("/webhook",(req,res)=>{
+//   res.redirect('https://3140-2804-14d-1685-a1e3-7deb-aafe-859a-406d.ngrok-free.app/t')
 
-  let mode=req.query["hub.mode"];
-  let challange=req.query["hub.challenge"];
-  let token=req.query["hub.verify_token"];
-  console.log('@@@@@@@@@@')
+//   let mode=req.query["hub.mode"];
+//   let challange=req.query["hub.challenge"];
+//   let token=req.query["hub.verify_token"];
+//   console.log('@@@@@@@@@@')
 
-   if(mode && token){
+//    if(mode && token){
 
-       if(mode==="subscribe" && token==='ivan'){
-           res.status(200).send(challange);
-       }else{
-           res.status(403);
-       }
+//        if(mode==="subscribe" && token==='ivan'){
+//            res.status(200).send(challange);
+//        }else{
+//            res.status(403);
+//        }
 
-   }
+//    }
 
-});
+// });
 
 
 // to test only
