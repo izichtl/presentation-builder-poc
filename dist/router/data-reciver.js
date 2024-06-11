@@ -147,11 +147,18 @@ router.get('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, v
         data: 'user_not_found',
         status: 400
     };
+    const user_id = req.query.user;
+    if (user_id === null || user_id === undefined || user_id === '') {
+        res.status(401).send({
+            success: false,
+            data: 'invalid_params',
+        });
+        return;
+    }
     try {
         redisClient = yield redis_1.redisPool.acquire();
-        const dataFromForm = req.body;
-        const userExist = yield redisClient.get(dataFromForm.user_id);
-        if (userExist !== null || userExist !== undefined) {
+        const userExist = yield redisClient.get(user_id);
+        if (!(userExist === null)) {
             response.success = true;
             response.status = 200;
             response.data = JSON.parse(userExist);

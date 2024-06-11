@@ -135,18 +135,26 @@ router.get('/whatsapp/metrics', upload.none(), async (req: Request, res: Respons
     data: 'user_not_found',
     status: 400
   }
+  const user_id = req.query.user
+  
+  if (user_id === null || user_id === undefined || user_id === '') {
+    res.status(401).send({
+      success: false,
+      data: 'invalid_params',
+    })
+    return
+  }
+  
   try {
     redisClient = await redisPool.acquire()
-    const dataFromForm = req.body
-    const userExist = await redisClient.get(dataFromForm.user_id)
-    if (userExist !== null || userExist !== undefined) {
+    const userExist = await redisClient.get(user_id)
+    if (!(userExist === null)) {
       response.success = true
       response.status = 200
       response.data = JSON.parse(userExist)
     } 
-
   } catch (error) {
-    console.error('Erro ao usar a conexão Redis:', error)
+      console.error('Erro ao usar a conexão Redis:', error)
   } finally {
     if (redisClient) {
       await redisPool.release(redisClient)
