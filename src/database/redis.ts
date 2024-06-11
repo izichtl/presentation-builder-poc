@@ -20,3 +20,12 @@ const redisPool: Pool<Redis.Redis> = createPool({
 });
 
 export { redisPool };
+
+// redisClient.keys('*', (err, keys) => {
+//   if (err) {
+//       console.error("Error retrieving keys:", err);
+//       return;
+//   }
+//   console.log(JSON.stringify(keys, null, 2))
+//   redisClient.quit();
+// });

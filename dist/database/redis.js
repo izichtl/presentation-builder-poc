@@ -32,4 +32,12 @@ const redisPool = (0, generic_pool_1.createPool)({
     testOnBorrow: true
 });
 exports.redisPool = redisPool;
+// redisClient.keys('*', (err, keys) => {
+//   if (err) {
+//       console.error("Error retrieving keys:", err);
+//       return;
+//   }
+//   console.log(JSON.stringify(keys, null, 2))
+//   redisClient.quit();
+// });
 //# sourceMappingURL=redis.js.map

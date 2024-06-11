@@ -2,6 +2,8 @@
 import express, { Request, Response, Router } from 'express'
 import multer from 'multer'
 import { redisPool } from '../database/redis'
+import { formatDateTime } from '../helper/datetime'
+import Redis from 'ioredis';
 
 const router: Router = express.Router()
 router.use(express.json())
@@ -62,4 +64,99 @@ router.post('/', upload.none(), async (req: Request, res: Response) => {
   }
 })
 
+router.post('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
+  let redisClient = null
+  try {
+    redisClient = await redisPool.acquire()
+    const dataFromForm = req.body
+    const userExist = await redisClient.get(dataFromForm.user_id)
+
+    if (userExist === null || userExist === undefined) {
+      const userModel = {
+        id: dataFromForm.user_id,
+        data_array: [],
+        created_at: formatDateTime(new Date())
+      }
+      delete dataFromForm.user_id
+      userModel.data_array.push(dataFromForm)
+      redisClient.set(userModel.id as string, JSON.stringify(userModel))
+    } else {
+      const jsonUserExist = JSON.parse(userExist)
+      delete dataFromForm.user_id
+      jsonUserExist.data_array.push(dataFromForm)
+      redisClient.set(jsonUserExist.id as string, JSON.stringify(jsonUserExist))
+    }
+  } catch (error) {
+    console.error('Erro ao usar a conexão Redis:', error)
+  } finally {
+    if (redisClient) {
+      await redisPool.release(redisClient)
+    }
+    res.status(200).send({
+      success: true
+    })
+  }
+})
+router.delete('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
+  let redisClient = null
+  let response = {
+    success: true,
+    msg: 'deleted',
+    status: 200
+  }
+  try {
+    redisClient = await redisPool.acquire()
+    const dataFromForm = req.body
+    const userExist = await redisClient.get(dataFromForm.user_id)
+
+    if (userExist === null || userExist === undefined) {
+      response.success = false
+      response.status = 400
+      response.msg = 'user_not_found'
+    } else {
+      redisClient.del(dataFromForm.user_id)
+    }
+  } catch (error) {
+    console.error('Erro ao usar a conexão Redis:', error)
+  } finally {
+    if (redisClient) {
+      await redisPool.release(redisClient)
+    }
+    res.status(response.status).send({
+      success: response.success,
+      msg: response.msg,
+    })
+  }
+})
+router.get('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
+  let redisClient = null
+  let response = {
+    success: false,
+    data: 'user_not_found',
+    status: 400
+  }
+  try {
+    redisClient = await redisPool.acquire()
+    const dataFromForm = req.body
+    const userExist = await redisClient.get(dataFromForm.user_id)
+    if (userExist !== null || userExist !== undefined) {
+      response.success = true
+      response.status = 200
+      response.data = JSON.parse(userExist)
+    } 
+
+  } catch (error) {
+    console.error('Erro ao usar a conexão Redis:', error)
+  } finally {
+    if (redisClient) {
+      await redisPool.release(redisClient)
+    }
+    res.status(response.status).send({
+      success: response.success,
+      data: response.data,
+    })
+  }
+})
+
 export default router
+
