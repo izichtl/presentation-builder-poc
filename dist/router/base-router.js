@@ -13,10 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const uuid_1 = require("uuid");
 const router = express_1.default.Router();
 router.use(express_1.default.json());
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send({ response: true });
+    res.send({
+        success: true,
+        uuid: (0, uuid_1.v4)()
+    });
 }));
 exports.default = router;
 //# sourceMappingURL=base-router.js.map

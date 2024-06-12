@@ -16,7 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const multer_1 = __importDefault(require("multer"));
 const redis_1 = require("../database/redis");
-const datetime_1 = require("../helper/datetime");
+const supabase_1 = require("../database/supabase");
 const router = express_1.default.Router();
 router.use(express_1.default.json());
 const upload = (0, multer_1.default)();
@@ -73,111 +73,80 @@ router.post('/', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 router.post('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let redisClient = null;
-    try {
-        redisClient = yield redis_1.redisPool.acquire().then(e => console.log('acquire-post', e)).catch(e => console.log('acquire-post', e));
-        const dataFromForm = req.body;
-        const userExist = yield redisClient.get(dataFromForm.user_id).then(e => console.log('get-post', e)).catch(e => console.log('get-post', e));
-        if (userExist === null || userExist === undefined) {
-            const userModel = {
-                id: dataFromForm.user_id,
-                data_array: [],
-                created_at: (0, datetime_1.formatDateTime)(new Date())
-            };
-            delete dataFromForm.user_id;
-            userModel.data_array.push(dataFromForm);
-            redisClient.set(userModel.id, JSON.stringify(userModel)).then(e => console.log('set-post1', e)).catch(e => console.log('set-post1', e));
-        }
-        else {
-            const jsonUserExist = JSON.parse(userExist);
-            delete dataFromForm.user_id;
-            jsonUserExist.data_array.push(dataFromForm);
-            redisClient.set(jsonUserExist.id, JSON.stringify(jsonUserExist)).then(e => console.log('set-post', e)).catch(e => console.log('set-post2', e));
-        }
-    }
-    catch (error) {
-        console.error('Erro ao usar a conexão Redis:', error);
-    }
-    finally {
-        if (redisClient) {
-            yield redis_1.redisPool.release(redisClient).then(e => console.log('release-post', e)).catch(e => console.log('release-post', e));
+    const dataFromForm = req.body;
+    if (dataFromForm.user_id !== undefined &&
+        dataFromForm.data !== undefined &&
+        dataFromForm.type !== undefined) {
+        const insert = yield supabase_1.supabase
+            .from('whatsapp_metrics')
+            .insert({
+            "user_id": dataFromForm.user_id,
+            "scope": dataFromForm.data,
+            "action": dataFromForm.type
+        });
+        if (insert.error) {
+            console.log('INSERT - Error in supabase');
         }
         res.status(200).send({
             success: true
         });
     }
-}));
-router.delete('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let redisClient = null;
-    let response = {
-        success: true,
-        msg: 'deleted',
-        status: 200
-    };
-    try {
-        redisClient = yield redis_1.redisPool.acquire().then(e => console.log('acquire-del', e)).catch(e => console.log('acquire-del', e));
-        const dataFromForm = req.body;
-        const userExist = yield redisClient.get(dataFromForm.user_id).then(e => console.log('get-del', e)).catch(e => console.log('get-del', e));
-        if (userExist === null || userExist === undefined) {
-            response.success = false;
-            response.status = 400;
-            response.msg = 'user_not_found';
-        }
-        else {
-            redisClient.del(dataFromForm.user_id);
-        }
-    }
-    catch (error) {
-        console.error('Erro ao usar a conexão Redis:', error);
-    }
-    finally {
-        if (redisClient) {
-            yield redis_1.redisPool.release(redisClient).then(e => console.log('release-del', e)).catch(e => console.log('release-del', e));
-        }
-        res.status(response.status).send({
-            success: response.success,
-            msg: response.msg,
+    else {
+        res.status(401).send({
+            success: false,
+            data: 'invalid_params'
         });
     }
 }));
-router.get('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('get - 01');
-    let redisClient = null;
-    let response = {
-        success: false,
-        data: 'user_not_found',
-        status: 400
-    };
+router.delete('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user_id = req.query.user;
-    console.log('get - 02');
-    if (user_id === null || user_id === undefined || user_id === '') {
-        console.log('get - 04');
+    if (user_id !== undefined || user_id !== null) {
+        const select = yield supabase_1.supabase
+            .from('whatsapp_metrics')
+            .delete().eq('user_id', user_id);
+        if (select.status === 204) {
+            res.status(200).send({
+                success: true,
+                data: 'deleted',
+            });
+        }
+        if (select.error) {
+            res.status(500).send({
+                success: false,
+                data: 'database_error',
+            });
+        }
+    }
+    else {
         res.status(401).send({
             success: false,
             data: 'invalid_params',
         });
-        return;
     }
-    console.log('get - 03');
-    try {
-        redisClient = yield redis_1.redisPool.acquire().then(e => console.log('acquire-get', e)).catch(e => console.log('acquire-get', e));
-        const userExist = yield redisClient.get(user_id).then(e => console.log('get-get', e)).catch(e => console.log('get-get', e));
-        if (!(userExist === null)) {
-            response.success = true;
-            response.status = 200;
-            response.data = JSON.parse(userExist);
+}));
+router.get('/whatsapp/metrics', upload.none(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user_id = req.query.user;
+    if (user_id !== undefined || user_id !== null) {
+        const select = yield supabase_1.supabase
+            .from('whatsapp_metrics')
+            .select().eq('user_id', user_id);
+        if (select.data[0] === undefined) {
+            res.status(404).send({
+                success: false,
+                data: 'user_not_found',
+            });
+        }
+        else {
+            res.status(200).send({
+                success: true,
+                data: select.data,
+            });
         }
     }
-    catch (error) {
-        console.error('Erro ao usar a conexão Redis:', error);
-    }
-    finally {
-        if (redisClient) {
-            yield redis_1.redisPool.release(redisClient).then(e => console.log('release-get', e)).catch(e => console.log('release-get', e));
-        }
-        res.status(response.status).send({
-            success: response.success,
-            data: response.data,
+    else {
+        res.status(401).send({
+            success: false,
+            data: 'invalid_params',
         });
     }
 }));

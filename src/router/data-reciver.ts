@@ -2,8 +2,7 @@
 import express, { Request, Response, Router } from 'express'
 import multer from 'multer'
 import { redisPool } from '../database/redis'
-import { formatDateTime } from '../helper/datetime'
-import Redis from 'ioredis';
+import { supabase } from '../database/supabase'
 
 const router: Router = express.Router()
 router.use(express.json())
@@ -65,105 +64,96 @@ router.post('/', upload.none(), async (req: Request, res: Response) => {
 })
 
 router.post('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
-  let redisClient = null
-  try {
-    redisClient = await redisPool.acquire().then(e=>console.log('acquire-post', e)).catch(e=>console.log('acquire-post',e))
-    const dataFromForm = req.body
-    const userExist = await redisClient.get(dataFromForm.user_id).then(e=>console.log('get-post', e)).catch(e=>console.log('get-post',e))
+  const dataFromForm = req.body
+  if (
+      dataFromForm.user_id !== undefined &&
+      dataFromForm.data !== undefined &&
+      dataFromForm.type !== undefined 
+    ) {
+    
+    const insert = await supabase
+      .from('whatsapp_metrics')
+      .insert(
+        {
+          "user_id": dataFromForm.user_id,
+          "scope": dataFromForm.data,
+          "action": dataFromForm.type
+        }
+      )
 
-    if (userExist === null || userExist === undefined) {
-      const userModel = {
-        id: dataFromForm.user_id,
-        data_array: [],
-        created_at: formatDateTime(new Date())
-      }
-      delete dataFromForm.user_id
-      userModel.data_array.push(dataFromForm)
-      redisClient.set(userModel.id as string, JSON.stringify(userModel)).then(e=>console.log('set-post1', e)).catch(e=>console.log('set-post1',e))
-    } else {
-      const jsonUserExist = JSON.parse(userExist)
-      delete dataFromForm.user_id
-      jsonUserExist.data_array.push(dataFromForm)
-      redisClient.set(jsonUserExist.id as string, JSON.stringify(jsonUserExist)).then(e=>console.log('set-post', e)).catch(e=>console.log('set-post2',e))
+    if (insert.error) {
+      console.log('INSERT - Error in supabase');
     }
-  } catch (error) {
-    console.error('Erro ao usar a conexão Redis:', error)
-  } finally {
-    if (redisClient) {
-      await redisPool.release(redisClient).then(e=>console.log('release-post', e)).catch(e=>console.log('release-post',e))
-    }
+
     res.status(200).send({
       success: true
     })
-  }
-})
-router.delete('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
-  let redisClient = null
-  let response = {
-    success: true,
-    msg: 'deleted',
-    status: 200
-  }
-  try {
-    redisClient = await redisPool.acquire().then(e=>console.log('acquire-del', e)).catch(e=>console.log('acquire-del',e))
-    const dataFromForm = req.body
-    const userExist = await redisClient.get(dataFromForm.user_id).then(e=>console.log('get-del', e)).catch(e=>console.log('get-del',e))
 
-    if (userExist === null || userExist === undefined) {
-      response.success = false
-      response.status = 400
-      response.msg = 'user_not_found'
-    } else {
-      redisClient.del(dataFromForm.user_id)
-    }
-  } catch (error) {
-    console.error('Erro ao usar a conexão Redis:', error)
-  } finally {
-    if (redisClient) {
-      await redisPool.release(redisClient).then(e=>console.log('release-del', e)).catch(e=>console.log('release-del',e))
-    }
-    res.status(response.status).send({
-      success: response.success,
-      msg: response.msg,
+  } else {
+    res.status(401).send({
+      success: false,
+      data: 'invalid_params'
     })
   }
 })
-router.get('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
-  console.log('get - 01')
-  let redisClient = null
-  let response = {
-    success: false,
-    data: 'user_not_found',
-    status: 400
-  }
+
+
+router.delete('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
   const user_id = req.query.user
-  console.log('get - 02')
-  if (user_id === null || user_id === undefined || user_id === '') {
-    console.log('get - 04')
+  if (user_id !== undefined || user_id !== null ) {
+
+    const select = await supabase
+      .from('whatsapp_metrics')
+      .delete().eq('user_id', user_id)
+
+    if (select.status === 204) {
+      res.status(200).send({
+        success: true,
+        data: 'deleted',
+      })
+    }
+    if (select.error) {
+      res.status(500).send({
+        success: false,
+        data: 'database_error',
+      })
+    }
+  } else {
     res.status(401).send({
       success: false,
       data: 'invalid_params',
     })
-    return
   }
-  console.log('get - 03')
-  try {
-    redisClient = await redisPool.acquire().then(e=>console.log('acquire-get', e)).catch(e=>console.log('acquire-get', e))
-    const userExist = await redisClient.get(user_id).then(e=>console.log('get-get', e)).catch(e=>console.log('get-get', e))
-    if (!(userExist === null)) {
-      response.success = true
-      response.status = 200
-      response.data = JSON.parse(userExist)
-    } 
-  } catch (error) {
-      console.error('Erro ao usar a conexão Redis:', error)
-  } finally {
-    if (redisClient) {
-      await redisPool.release(redisClient).then(e=>console.log('release-get', e)).catch(e=>console.log('release-get', e))
+})
+
+
+router.get('/whatsapp/metrics', upload.none(), async (req: Request, res: Response) => {
+  const user_id = req.query.user
+
+  if (user_id !== undefined || user_id !== null ) {
+    const select = await supabase
+      .from('whatsapp_metrics')
+      .select().eq('user_id', user_id)
+
+    if (select.data[0] === undefined) {
+
+      res.status(404).send({
+        success: false,
+        data: 'user_not_found',
+      })
+
+    } else {
+
+      res.status(200).send({
+        success: true,
+        data: select.data,
+      })
+
     }
-    res.status(response.status).send({
-      success: response.success,
-      data: response.data,
+  } else {
+    res.status(401).send({
+      success: false,
+      data: 'invalid_params',
     })
   }
 })
