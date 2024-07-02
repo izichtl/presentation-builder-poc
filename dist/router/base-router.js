@@ -16,7 +16,9 @@ const express_1 = __importDefault(require("express"));
 const uuid_1 = require("uuid");
 const router = express_1.default.Router();
 router.use(express_1.default.json());
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('@@@');
+    console.log(req.body);
     res.send({
         success: true,
         uuid: (0, uuid_1.v4)()
