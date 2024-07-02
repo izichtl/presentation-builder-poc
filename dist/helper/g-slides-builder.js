@@ -25,7 +25,8 @@ const fetchImage = (src) => __awaiter(void 0, void 0, void 0, function* () {
     return image.data;
 });
 const processarTemas = (temasString) => {
-    const temas = JSON.parse(temasString);
+    const dobleQuoutes = temasString.replaceAll("'", "\"");
+    const temas = JSON.parse(dobleQuoutes);
     const temasProcessados = [];
     temas.forEach((tema) => {
         const temaFormatado = tema.Assuntos
@@ -73,7 +74,8 @@ const slidesRequestBuilder = (data) => __awaiter(void 0, void 0, void 0, functio
             fields: 'pageBackgroundFill'
         }
     });
-    processarTemas(data.thema_list).forEach(theme_item => {
+    const temasProcessados = processarTemas(data.thema_list);
+    temasProcessados.forEach(theme_item => {
         image_path_1.themeImgUrls[theme_item].forEach(element => {
             const thema_slide_id = (0, uuid_1.v4)();
             requests.push({

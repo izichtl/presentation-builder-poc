@@ -12,7 +12,8 @@ const fetchImage = async (src) => {
 }
 
 const processarTemas = (temasString: string): string[] => {
-  const temas: { Assuntos: string }[] = JSON.parse(temasString)
+  const dobleQuoutes = temasString.replaceAll("'", "\"")
+  const temas: string[] = JSON.parse(dobleQuoutes)
   const temasProcessados: string[] = []
   temas.forEach((tema) => {
       const temaFormatado = tema.Assuntos
@@ -26,6 +27,7 @@ const processarTemas = (temasString: string): string[] => {
 }
 
 export const slidesRequestBuilder = async (data) => {
+ 
     const requests = [
     {
       deleteObject: {
@@ -63,7 +65,9 @@ export const slidesRequestBuilder = async (data) => {
       }
     })
 
-    processarTemas(data.thema_list).forEach(theme_item => {
+    const temasProcessados = processarTemas(data.thema_list)
+
+    temasProcessados.forEach(theme_item => {
       themeImgUrls[theme_item].forEach(element => {
         const thema_slide_id = uuidv4()
         requests.push({

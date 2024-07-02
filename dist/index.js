@@ -10,10 +10,16 @@ const google_handler_1 = __importDefault(require("./router/google-handler"));
 const data_reciver_1 = __importDefault(require("./router/data-reciver"));
 const base_router_1 = __importDefault(require("./router/base-router"));
 const pdf_invoice_1 = __importDefault(require("./router/pdf-invoice"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 require("dotenv").config();
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
+// Define o caminho para o diretório 'public'
+const publicDirPath = path_1.default.join(__dirname, 'public');
+// Configura o middleware para servir arquivos estáticos
+app.use(express_1.default.static(publicDirPath));
+// app.use(express.static(path.join(__dirname, 'public')));
 // router
 app.use('/', google_handler_1.default);
 app.use('/data-reciver', data_reciver_1.default);

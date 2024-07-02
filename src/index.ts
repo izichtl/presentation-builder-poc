@@ -6,12 +6,20 @@ import googleHandler from './router/google-handler'
 import dataReciver from './router/data-reciver'
 import testRouter from './router/base-router'
 import pdfHandler from './router/pdf-invoice'
+import path from 'path';
 
 const app = express()
 
 require("dotenv").config()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+// Define o caminho para o diretório 'public'
+const publicDirPath = path.join(__dirname, 'public');
+
+// Configura o middleware para servir arquivos estáticos
+app.use(express.static(publicDirPath));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 
 // router

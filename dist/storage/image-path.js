@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.introImgUrl = exports.themeImgUrls = void 0;
+exports.introSlides = exports.introImgUrl = exports.themeImgUrls = void 0;
 const basePath = 'https://lh3.googleusercontent.com/d/';
 exports.themeImgUrls = {
     cooperativismo: [
@@ -32,4 +32,12 @@ exports.introImgUrl = {
     FORMAL: basePath + '1ZMX1YGWals59a6zZw65sQUgP4Csl7Ro1',
     NEUTRO: basePath + '1k-6GepkpSuWFJsnLB_7WT0UMb2ObNOGg'
 };
+exports.introSlides = {
+    DESCONTRAIDO: basePath + '12Dzy8AODGqVWYEwoGZmMJvaka3ZWptnJ',
+    FORMAL: basePath + '1ZMX1YGWals59a6zZw65sQUgP4Csl7Ro1',
+    NEUTRO: basePath + '1k-6GepkpSuWFJsnLB_7WT0UMb2ObNOGg'
+};
+// INTRO ID - 1NQRc9vhjilI6VxZrX7tLGGeUyWw_DACi
+// INVEST ID - 1EqET4ZUKak8OdIbAG40_RE_bDdwJ3p1K
+// COOP - ID - 1q4CR-6YEHwqdX07GcWCA2QahGGEKmY2S
 //# sourceMappingURL=image-path.js.map
