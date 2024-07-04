@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.publicDirPath = void 0;
 // @ts-nocheck
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -19,9 +18,9 @@ require("dotenv").config();
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 // Define o caminho para o diretório 'public'
-exports.publicDirPath = path_1.default.join(__dirname, 'public');
+const publicDirPath = path_1.default.join(__dirname, 'public');
 // Configura o middleware para servir arquivos estáticos
-app.use(express_1.default.static(exports.publicDirPath));
+app.use(express_1.default.static(publicDirPath));
 // app.use(express.static(path.join(__dirname, 'public')));
 // console.log(fs.createReadStream(publicDirPath + '/images/intro_a.png'))
 // router

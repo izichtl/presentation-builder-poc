@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
-import fs from 'fs'
-import { publicDirPath } from '../../index';
+// import fs from 'fs'
+// import { publicDirPath } from '../../index';
 require("dotenv").config()
 
 

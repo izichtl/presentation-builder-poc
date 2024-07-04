@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // Define o caminho para o diretório 'public'
-export const publicDirPath = path.join(__dirname, 'public');
+const publicDirPath = path.join(__dirname, 'public');
 
 // Configura o middleware para servir arquivos estáticos
 app.use(express.static(publicDirPath));

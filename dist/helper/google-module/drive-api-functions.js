@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.patchToPublicFile = exports.getFile = exports.getFileStream = exports.getPublicLink = exports.deleteFile = exports.uploadPDF = void 0;
 const googleapis_1 = require("googleapis");
+// import fs from 'fs'
+// import { publicDirPath } from '../../index';
 require("dotenv").config();
 function uploadPDF(token, buffer, size) {
     return __awaiter(this, void 0, void 0, function* () {
