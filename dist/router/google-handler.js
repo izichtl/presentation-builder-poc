@@ -112,7 +112,8 @@ router.use(express_1.default.json());
 const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.APP_CLIENT_ID, process.env.APP_CLIENT_SECRET, process.env.APP_REDIRECT_URL);
 const scopes = [
     'https://www.googleapis.com/auth/presentations',
-    'https://www.googleapis.com/auth/userinfo.email'
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/drive'
 ];
 router.get('/oauth', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('oauth');

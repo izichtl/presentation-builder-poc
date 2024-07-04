@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken'
 import { redisPool } from '../database/redis';
+import { supabase } from '../database/supabase';
 
 export async function getUserFromToken(
     token: string
@@ -38,4 +39,16 @@ export async function updateUserToken(
     })
 
     redisPool.release(redisClient)
+  }
+
+
+  export async function getUserFromEmailInSupabase(
+    email: string
+  ): Promise<any | null> {
+      const select = await supabase
+        .from('whatsapp_presentation')
+        .select().eq('userEmail', email)
+        .order('created_at', { ascending: false });
+      if (select.data !== null) return select.data[0]
+      if (select.data === null) return null
   }

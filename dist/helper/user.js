@@ -32,9 +32,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserToken = exports.getUserFromEmail = exports.getUserFromToken = void 0;
+exports.getUserFromEmailInSupabase = exports.updateUserToken = exports.getUserFromEmail = exports.getUserFromToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const redis_1 = require("../database/redis");
+const supabase_1 = require("../database/supabase");
 function getUserFromToken(token) {
     return __awaiter(this, void 0, void 0, function* () {
         return jwt.decode(token.replace('Bearer ', ''), { complete: true });
@@ -72,4 +73,17 @@ function updateUserToken(email, access_token, refresh_token) {
     });
 }
 exports.updateUserToken = updateUserToken;
+function getUserFromEmailInSupabase(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const select = yield supabase_1.supabase
+            .from('whatsapp_presentation')
+            .select().eq('userEmail', email)
+            .order('created_at', { ascending: false });
+        if (select.data !== null)
+            return select.data[0];
+        if (select.data === null)
+            return null;
+    });
+}
+exports.getUserFromEmailInSupabase = getUserFromEmailInSupabase;
 //# sourceMappingURL=user.js.map

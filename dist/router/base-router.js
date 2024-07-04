@@ -13,12 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const sender_1 = require("../api/sender");
 const uuid_1 = require("uuid");
 const router = express_1.default.Router();
 router.use(express_1.default.json());
-router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('@@@');
     console.log(req.body);
+    const chat = yield (0, sender_1.updateChat)('izichtl@gmail.com', '1QD78kQgJiJMtixVKIlqgTZtZ9-GLBj3w', 'arco-whatsapp-555121651571', '5521982608223');
+    console.log(chat);
     res.send({
         success: true,
         uuid: (0, uuid_1.v4)()

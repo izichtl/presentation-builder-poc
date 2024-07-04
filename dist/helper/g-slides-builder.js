@@ -12,11 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pdfSlidesBuilder = exports.slidesRequestBuilder = void 0;
+exports.pdfPresentationBuilderBySlides = exports.pdfSlidesBuilder = exports.slidesRequestBuilder = void 0;
 // @ts-nocheck 
 const uuid_1 = require("uuid");
 const image_path_1 = require("../storage/image-path");
 const axios_1 = __importDefault(require("axios"));
+const botmaker_path_1 = require("../storage/botmaker-path");
+const introduction_builder_1 = require("./introduction-builder");
+const slides_api_functions_1 = require("./google-module/slides-api-functions");
 const fetchImage = (src) => __awaiter(void 0, void 0, void 0, function* () {
     const image = yield axios_1.default
         .get(src, {
@@ -129,4 +132,34 @@ const pdfSlidesBuilder = (data, document, sizes) => __awaiter(void 0, void 0, vo
     }
 });
 exports.pdfSlidesBuilder = pdfSlidesBuilder;
+const pdfPresentationBuilderBySlides = (data, document, sizes, bt) => __awaiter(void 0, void 0, void 0, function* () {
+    const processedIds = [];
+    const token = yield (0, introduction_builder_1.authLayer)(data.userEmail);
+    const introUrl = yield (0, introduction_builder_1.createIntroduction)(data.userEmail, {
+        mood: data.presentationData.mood.toUpperCase(),
+        name: data.presentationData.title.toUpperCase()
+    });
+    const introduction = yield fetchImage(introUrl);
+    document.image(introduction, { width: sizes.width, height: sizes.height }).text('Stretch', sizes.width, sizes.height);
+    const themes = data.presentationData.theme;
+    themes.forEach((tema) => {
+        if (tema !== 'FINALIZAR') {
+            processedIds.push(botmaker_path_1.themeUrlIds[tema.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')]);
+        }
+    });
+    const addThemes = (innerDocument) => __awaiter(void 0, void 0, void 0, function* () {
+        for (const id of processedIds) {
+            const thumbNailsArray = yield (0, slides_api_functions_1.getImageLinks)(token, id);
+            for (const element of thumbNailsArray) {
+                const theme_page = yield fetchImage(element);
+                innerDocument.addPage({ size: [sizes.width, sizes.height], margin: 0 });
+                innerDocument.image(theme_page, { width: sizes.width, height: sizes.height }).text('Stretch', sizes.width, sizes.height);
+            }
+        }
+        return innerDocument;
+    });
+    const outDocument = yield addThemes(document);
+    return outDocument;
+});
+exports.pdfPresentationBuilderBySlides = pdfPresentationBuilderBySlides;
 //# sourceMappingURL=g-slides-builder.js.map

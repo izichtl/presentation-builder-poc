@@ -2,6 +2,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { introImgUrl, themeImgUrls } from '../storage/image-path';
 import axios from 'axios'
+import { themeUrlIds } from '../storage/botmaker-path';
+import { authLayer, createIntroduction } from './introduction-builder';
+import { getImageLinks } from './google-module/slides-api-functions';
 
 const fetchImage = async (src) => {
   const image = await axios
@@ -122,6 +125,45 @@ export const pdfSlidesBuilder = async (data: any, document: any, sizes: any) => 
   }
 }
 
+
+
+
+
+export const pdfPresentationBuilderBySlides = async (data: any, document: any, sizes: any, bt: boolean | undefined) => {
+  const processedIds = []
+  const token = await authLayer(data.userEmail)
+  const introUrl = await createIntroduction(
+    data.userEmail, { 
+    mood: data.presentationData.mood.toUpperCase(), 
+    name: data.presentationData.title.toUpperCase()
+  })
+
+
+  const introduction = await fetchImage(introUrl);
+  document.image(introduction, {width: sizes.width, height: sizes.height}).text('Stretch', sizes.width, sizes.height)
+
+
+  const themes = data.presentationData.theme
+  themes.forEach((tema) => {
+    if(tema !== 'FINALIZAR'){
+      processedIds.push(themeUrlIds[tema.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')])
+    } 
+  })
+
+  const addThemes = async (innerDocument) => {
+    for (const id of processedIds) {
+      const thumbNailsArray = await getImageLinks(token, id)
+      for (const element of thumbNailsArray) {
+        const theme_page = await fetchImage(element)
+        innerDocument.addPage({ size: [sizes.width, sizes.height], margin: 0 })
+        innerDocument.image(theme_page, {width: sizes.width, height: sizes.height}).text('Stretch', sizes.width, sizes.height);
+      }
+    } 
+    return innerDocument
+  }
+  const outDocument = await addThemes(document)
+  return outDocument
+}
 
 
 
